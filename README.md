@@ -329,21 +329,14 @@ Short options can be combined: `-lw`, `-pc`, etc.
 
 - O(1) stopword lookup using Bash associative arrays
 - Efficient for processing moderate-sized texts (< 1MB)
-- **Recommendation**: For documents > 1,000 words, Python is the better choice for performance-critical applications
-- Bash excels at small inputs (< 500 words) due to lower startup overhead
-- Python scales better for larger texts due to optimized C implementations
+- **Recommendation**: For documents > 1,500 words, Python is the better choice for performance-critical applications
+- Bash excels at small inputs (< 1500 words) due to lower startup overhead
 
-#### Benchmark Results
-
-Performance comparison on real-world text (README.md, 1,136 words):
-- **Bash**: 60 ms/iteration
-- **Python**: 23 ms/iteration (2.6× faster)
-
-For small texts (< 500 words), Bash is typically faster due to Python's startup overhead. The crossover point is around 1,000 words, where Python's superior string processing begins to dominate.
+For small texts Bash is typically faster due to Python's startup overhead. The crossover point starts at around 1,500 words, where Python's superior string processing begins to dominate.
 
 ## License
 
-GPL-3. See [LICENCE](LICENCE)
+GPL-3. See [LICENSE](LICENSE)
 
 ## Contributing
 
