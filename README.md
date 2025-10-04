@@ -25,7 +25,7 @@ A fast, multilingual text processing utility that filters stopwords from input t
 
 1. Clone or download this repository:
 ```bash
-git clone https://github.com/Open-Technology-Foundation/stopwords.sh
+git clone https://github.com/Open-Technology-Foundation/stopwords.bash
 cd stopwords
 ```
 
