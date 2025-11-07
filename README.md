@@ -31,7 +31,7 @@ cd stopwords
 
 2. Make the script executable:
 ```bash
-chmod +x stopwords.sh
+chmod +x stopwords.bash
 ```
 
 3. (Optional) Download NLTK stopwords corpus for data regeneration:
@@ -46,17 +46,17 @@ python -m nltk.downloader stopwords
 Filter stopwords from English text (default language):
 
 ```bash
-./stopwords.sh 'the quick brown fox jumps over the lazy dog'
+./stopwords.bash 'the quick brown fox jumps over the lazy dog'
 # Output: quick brown fox jumps lazy dog
 ```
 
 ### Reading from stdin
 
 ```bash
-echo 'the quick brown fox' | ./stopwords.sh
+echo 'the quick brown fox' | ./stopwords.bash
 # Output: quick brown fox
 
-cat document.txt | ./stopwords.sh
+cat document.txt | ./stopwords.bash
 ```
 
 ### Language Selection
@@ -65,15 +65,15 @@ Use the `-l` or `--language` option to specify a language:
 
 ```bash
 # Spanish
-./stopwords.sh -l spanish 'el rápido zorro marrón salta sobre el perro perezoso'
+./stopwords.bash -l spanish 'el rápido zorro marrón salta sobre el perro perezoso'
 # Output: rápido zorro marrón salta perro perezoso
 
 # Indonesian
-./stopwords.sh -l indonesian 'Pohon mangga tumbuh di halaman rumah'
+./stopwords.bash -l indonesian 'Pohon mangga tumbuh di halaman rumah'
 # Output: pohon mangga tumbuh halaman rumah
 
 # French
-./stopwords.sh -l french 'le chat noir dort sur le canapé'
+./stopwords.bash -l french 'le chat noir dort sur le canapé'
 # Output: chat noir dort canapé
 ```
 
@@ -82,10 +82,10 @@ Use the `-l` or `--language` option to specify a language:
 By default, punctuation is removed. Use `-p` or `--keep-punctuation` to preserve it:
 
 ```bash
-./stopwords.sh 'Hello, world! How are you?'
+./stopwords.bash 'Hello, world! How are you?'
 # Output: hello world
 
-./stopwords.sh -p 'Hello, world! How are you?'
+./stopwords.bash -p 'Hello, world! How are you?'
 # Output: hello, world!
 ```
 
@@ -94,7 +94,7 @@ By default, punctuation is removed. Use `-p` or `--keep-punctuation` to preserve
 Use `-w` or `--list-words` to output one word per line:
 
 ```bash
-./stopwords.sh -w 'the quick brown fox'
+./stopwords.bash -w 'the quick brown fox'
 # Output:
 # quick
 # brown
@@ -106,7 +106,7 @@ Use `-w` or `--list-words` to output one word per line:
 Use `-c` or `--count` to count word frequencies:
 
 ```bash
-./stopwords.sh -c 'the quick brown fox jumps over the lazy dog and the fox runs'
+./stopwords.bash -c 'the quick brown fox jumps over the lazy dog and the fox runs'
 # Output:
 # 1 brown
 # 1 dog
@@ -117,7 +117,7 @@ Use `-c` or `--count` to count word frequencies:
 # 2 fox
 
 # From a file
-./stopwords.sh -c < document.txt
+./stopwords.bash -c < document.txt
 ```
 
 The output format is `count word`, sorted numerically by count (ascending).
@@ -126,21 +126,21 @@ The output format is `count word`, sorted numerically by count (ascending).
 
 ```bash
 # Spanish text with punctuation preserved, output as list
-./stopwords.sh -l spanish -p -w 'Hola, ¿cómo estás? Muy bien, gracias.'
+./stopwords.bash -l spanish -p -w 'Hola, ¿cómo estás? Muy bien, gracias.'
 
 # Word frequency from German text
-./stopwords.sh -l german -c 'Der Hund läuft und der Hund spielt'
+./stopwords.bash -l german -c 'Der Hund läuft und der Hund spielt'
 ```
 
 ### Version and Help
 
 ```bash
 # Show version
-./stopwords.sh -V
+./stopwords.bash -V
 # Output: stopwords 1.0.0
 
 # Show help message
-./stopwords.sh -h
+./stopwords.bash -h
 ```
 
 ## Supported Languages
@@ -249,7 +249,7 @@ The stopwords filter can also be sourced and used as a Bash function:
 
 ```bash
 # Source the script
-source stopwords.sh
+source stopwords.bash
 
 # Use the function
 stopwords 'the quick brown fox'
@@ -265,17 +265,17 @@ stopwords -l spanish 'el rápido zorro'
 
 ```bash
 # Extract keywords from a document
-cat article.txt | ./stopwords.sh -w | sort | uniq
+cat article.txt | ./stopwords.bash -w | sort | uniq
 
 # Find most common words in a document
-./stopwords.sh -c < article.txt | tail -20
+./stopwords.bash -c < article.txt | tail -20
 ```
 
 ### Search Query Processing
 
 ```bash
 # Clean up search queries
-echo "how to install python on ubuntu" | ./stopwords.sh
+echo "how to install python on ubuntu" | ./stopwords.bash
 # Output: install python ubuntu
 ```
 
@@ -283,7 +283,7 @@ echo "how to install python on ubuntu" | ./stopwords.sh
 
 ```bash
 # Analyze Spanish content
-curl -s https://example.com/es/article | ./stopwords.sh -l spanish -c
+curl -s https://example.com/es/article | ./stopwords.bash -l spanish -c
 ```
 
 ### Preprocessing for NLP
@@ -291,7 +291,7 @@ curl -s https://example.com/es/article | ./stopwords.sh -l spanish -c
 ```bash
 # Remove stopwords before feeding to ML model
 for file in corpus/*.txt; do
-  ./stopwords.sh < "$file" > "processed/$(basename "$file")"
+  ./stopwords.bash < "$file" > "processed/$(basename "$file")"
 done
 ```
 
