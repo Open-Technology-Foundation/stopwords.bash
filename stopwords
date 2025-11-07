@@ -5,14 +5,10 @@ stopwords() {
   # Script metadata
   local -- VERSION='1.0.0'
   local -- SCRIPT_NAME=${FUNCNAME[0]}
-  local -- SCRIPT_PATH DATADIR
+  local -- DATADIR
 
-  if [[ -v NLTK_DATA ]]; then
-    DATADIR="$NLTK_DATA"/corpora/stopwords
-  else
-    SCRIPT_PATH=$(readlink -en -- "${BASH_SOURCE[0]}")
-    DATADIR="${SCRIPT_PATH%/*}"/data
-  fi
+  [[ -v NLTK_DATA ]] || declare -- NLTK_DATA=/usr/share/nltk_data
+  DATADIR="$NLTK_DATA"/corpora/stopwords
 
   # variables
   local -- DEFAULT_LANGUAGE=english
@@ -32,7 +28,7 @@ stopwords() {
 
   # Parse command-line arguments
   while (($#)); do
-    case "$1" in
+    case $1 in
       -l|--language)
         [[ -n ${2:-} ]] || { error "Missing argument for option ${1@Q}"; return 2; }
         LANGUAGE=$2
@@ -69,16 +65,10 @@ stopwords() {
   # Validate language
   local -- stopwords_file="$DATADIR"/"$LANGUAGE"
   if [[ ! -f "$stopwords_file" ]]; then
-    error "Language ${LANGUAGE@Q} not supported."
-    >&2 echo 'Available languages:'
-    for f in "$DATADIR"/*; do
-      [[ -f "$f" ]] && >&2 basename "$f"
-    done | >&2 tr '\n' ',' | >&2 sed 's/,/, /g' | >&2 sed 's/, $//'
-    >&2 echo ''
-    error "Falling back to 'english'"
+    error "Language ${LANGUAGE@Q} not supported." "Falling back to 'english'"
     LANGUAGE=english
     stopwords_file="$DATADIR"/"$LANGUAGE"
-    [[ -f "$stopwords_file" ]] || { error "Stopwords data/$LANGUAGE not found!"; return 1; }
+    [[ -f "$stopwords_file" ]] || { error "Stopwords $DATADIR/$LANGUAGE not found!"; return 1; }
   fi
 
   # Load stopwords into associative array

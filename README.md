@@ -17,26 +17,111 @@ A fast, multilingual text processing utility that filters stopwords from input t
 ### Prerequisites
 
 - Bash 4.0+ (for associative array support)
-- For regenerating stopword data files (optional):
-  - Python 3.6+
-  - NLTK library with stopwords corpus
 
-### Setup
+### Quick Install (One-Liner)
 
-1. Clone or download this repository:
+```bash
+curl -fsSL https://raw.githubusercontent.com/Open-Technology-Foundation/stopwords.bash/main/install.sh | sudo bash
+```
+
+This one-liner will download and execute the installation script, installing stopwords system-wide.
+
+### Standard Install
+
+**System-wide installation** (recommended, requires sudo):
 ```bash
 git clone https://github.com/Open-Technology-Foundation/stopwords.bash
-cd stopwords
+cd stopwords.bash
+sudo make install
 ```
 
-2. Make the script executable:
+**User-local installation** (no sudo required):
 ```bash
-chmod +x stopwords.bash
+git clone https://github.com/Open-Technology-Foundation/stopwords.bash
+cd stopwords.bash
+make PREFIX=$HOME/.local install
 ```
 
-3. (Optional) Download NLTK stopwords corpus for data regeneration:
+This installs:
+- Script to `$PREFIX/bin/stopwords` (system: `/usr/local/bin/`, user: `~/.local/bin/`)
+- Stopwords data to `/usr/share/nltk_data/corpora/stopwords/` (33 languages, ~170KB)
+- Documentation to `$PREFIX/share/doc/stopwords/`
+
+### Manual Installation
+
+If you prefer not to use Make:
+
 ```bash
-python -m nltk.downloader stopwords
+# Using the install script directly
+./install.sh install
+
+# For user-local installation
+PREFIX=$HOME/.local ./install.sh install
+
+# Custom NLTK data location
+NLTK_DATA=$HOME/nltk_data ./install.sh install
+```
+
+### Verifying Installation
+
+Check that everything is installed correctly:
+
+```bash
+make check
+# or
+./install.sh check
+```
+
+This verifies:
+- Script is executable and in PATH
+- Stopwords data files are present (33 languages)
+- Basic functionality works
+
+### Uninstalling
+
+```bash
+# System installation
+sudo make uninstall
+
+# User installation
+make PREFIX=$HOME/.local uninstall
+
+# Or using install.sh
+./install.sh uninstall
+```
+
+### Environment Configuration
+
+The script uses the `NLTK_DATA` environment variable to locate stopwords data:
+- **Default**: `/usr/share/nltk_data` (no configuration needed)
+- **Custom location**: Set `NLTK_DATA` environment variable
+
+```bash
+# Add to ~/.bashrc or ~/.profile for custom location
+export NLTK_DATA=/path/to/your/nltk_data
+```
+
+If installing to a user directory, ensure the bin directory is in your PATH:
+```bash
+# Add to ~/.bashrc or ~/.profile
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+### Advanced Installation Options
+
+**Custom prefix**:
+```bash
+make PREFIX=/opt/local install
+```
+
+**Package staging** (for package maintainers):
+```bash
+make DESTDIR=/tmp/package PREFIX=/usr install
+```
+
+**Installation script help**:
+```bash
+./install.sh --help
 ```
 
 ## Usage
@@ -46,17 +131,17 @@ python -m nltk.downloader stopwords
 Filter stopwords from English text (default language):
 
 ```bash
-./stopwords.bash 'the quick brown fox jumps over the lazy dog'
+./stopwords 'the quick brown fox jumps over the lazy dog'
 # Output: quick brown fox jumps lazy dog
 ```
 
 ### Reading from stdin
 
 ```bash
-echo 'the quick brown fox' | ./stopwords.bash
+echo 'the quick brown fox' | ./stopwords
 # Output: quick brown fox
 
-cat document.txt | ./stopwords.bash
+cat document.txt | ./stopwords
 ```
 
 ### Language Selection
@@ -65,15 +150,15 @@ Use the `-l` or `--language` option to specify a language:
 
 ```bash
 # Spanish
-./stopwords.bash -l spanish 'el rápido zorro marrón salta sobre el perro perezoso'
+./stopwords -l spanish 'el rápido zorro marrón salta sobre el perro perezoso'
 # Output: rápido zorro marrón salta perro perezoso
 
 # Indonesian
-./stopwords.bash -l indonesian 'Pohon mangga tumbuh di halaman rumah'
+./stopwords -l indonesian 'Pohon mangga tumbuh di halaman rumah'
 # Output: pohon mangga tumbuh halaman rumah
 
 # French
-./stopwords.bash -l french 'le chat noir dort sur le canapé'
+./stopwords -l french 'le chat noir dort sur le canapé'
 # Output: chat noir dort canapé
 ```
 
@@ -82,10 +167,10 @@ Use the `-l` or `--language` option to specify a language:
 By default, punctuation is removed. Use `-p` or `--keep-punctuation` to preserve it:
 
 ```bash
-./stopwords.bash 'Hello, world! How are you?'
+./stopwords 'Hello, world! How are you?'
 # Output: hello world
 
-./stopwords.bash -p 'Hello, world! How are you?'
+./stopwords -p 'Hello, world! How are you?'
 # Output: hello, world!
 ```
 
@@ -94,7 +179,7 @@ By default, punctuation is removed. Use `-p` or `--keep-punctuation` to preserve
 Use `-w` or `--list-words` to output one word per line:
 
 ```bash
-./stopwords.bash -w 'the quick brown fox'
+./stopwords -w 'the quick brown fox'
 # Output:
 # quick
 # brown
@@ -106,7 +191,7 @@ Use `-w` or `--list-words` to output one word per line:
 Use `-c` or `--count` to count word frequencies:
 
 ```bash
-./stopwords.bash -c 'the quick brown fox jumps over the lazy dog and the fox runs'
+./stopwords -c 'the quick brown fox jumps over the lazy dog and the fox runs'
 # Output:
 # 1 brown
 # 1 dog
@@ -117,7 +202,7 @@ Use `-c` or `--count` to count word frequencies:
 # 2 fox
 
 # From a file
-./stopwords.bash -c < document.txt
+./stopwords -c < document.txt
 ```
 
 The output format is `count word`, sorted numerically by count (ascending).
@@ -126,21 +211,21 @@ The output format is `count word`, sorted numerically by count (ascending).
 
 ```bash
 # Spanish text with punctuation preserved, output as list
-./stopwords.bash -l spanish -p -w 'Hola, ¿cómo estás? Muy bien, gracias.'
+./stopwords -l spanish -p -w 'Hola, ¿cómo estás? Muy bien, gracias.'
 
 # Word frequency from German text
-./stopwords.bash -l german -c 'Der Hund läuft und der Hund spielt'
+./stopwords -l german -c 'Der Hund läuft und der Hund spielt'
 ```
 
 ### Version and Help
 
 ```bash
 # Show version
-./stopwords.bash -V
+./stopwords -V
 # Output: stopwords 1.0.0
 
 # Show help message
-./stopwords.bash -h
+./stopwords -h
 ```
 
 ## Supported Languages
@@ -217,31 +302,13 @@ Word frequency as `count word` pairs, sorted by count (ascending):
 
 ### Structure
 
-Stopword lists are stored in the `data/` directory:
-- One `.txt` file per language (e.g., `data/english.txt`, `data/spanish.txt`)
+Stopword lists are stored in the NLTK data directory:
+- Default location: `/usr/share/nltk_data/corpora/stopwords/`
+- Can be customized via the `NLTK_DATA` environment variable
+- One file per language (e.g., `english`, `spanish`)
 - One stopword per line
 - Alphabetically sorted
 - UTF-8 encoded
-
-### Regenerating Data Files
-
-To regenerate stopword data files from the NLTK corpus:
-
-1. Ensure NLTK is installed with the stopwords corpus:
-```bash
-pip install nltk
-python -m nltk.downloader stopwords
-```
-
-2. Run the data generation script:
-```bash
-./generate-stopwords-data.py
-```
-
-The script will:
-- Create the `data/` directory if it doesn't exist
-- Generate a `.txt` file for each language in the NLTK stopwords corpus
-- Display the number of words per language
 
 ## Using as a Sourced Function
 
@@ -249,7 +316,7 @@ The stopwords filter can also be sourced and used as a Bash function:
 
 ```bash
 # Source the script
-source stopwords.bash
+source stopwords
 
 # Use the function
 stopwords 'the quick brown fox'
@@ -265,17 +332,17 @@ stopwords -l spanish 'el rápido zorro'
 
 ```bash
 # Extract keywords from a document
-cat article.txt | ./stopwords.bash -w | sort | uniq
+cat article.txt | ./stopwords -w | sort | uniq
 
 # Find most common words in a document
-./stopwords.bash -c < article.txt | tail -20
+./stopwords -c < article.txt | tail -20
 ```
 
 ### Search Query Processing
 
 ```bash
 # Clean up search queries
-echo "how to install python on ubuntu" | ./stopwords.bash
+echo "how to install python on ubuntu" | ./stopwords
 # Output: install python ubuntu
 ```
 
@@ -283,7 +350,7 @@ echo "how to install python on ubuntu" | ./stopwords.bash
 
 ```bash
 # Analyze Spanish content
-curl -s https://example.com/es/article | ./stopwords.bash -l spanish -c
+curl -s https://example.com/es/article | ./stopwords -l spanish -c
 ```
 
 ### Preprocessing for NLP
@@ -291,7 +358,7 @@ curl -s https://example.com/es/article | ./stopwords.bash -l spanish -c
 ```bash
 # Remove stopwords before feeding to ML model
 for file in corpus/*.txt; do
-  ./stopwords.bash < "$file" > "processed/$(basename "$file")"
+  ./stopwords < "$file" > "processed/$(basename "$file")"
 done
 ```
 
@@ -319,7 +386,7 @@ Short options can be combined: `-lw`, `-pc`, etc.
 
 ### Algorithm
 
-1. **Load Stopwords**: Reads stopwords from `data/{language}.txt` into a Bash associative array for O(1) lookup
+1. **Load Stopwords**: Reads stopwords from `$NLTK_DATA/corpora/stopwords/{language}` into a Bash associative array for O(1) lookup
 2. **Normalize Text**: Converts input to lowercase for case-insensitive matching
 3. **Tokenize**: Splits text on whitespace (optionally removes punctuation first)
 4. **Filter**: Checks each word against stopwords dictionary
