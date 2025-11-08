@@ -2,6 +2,16 @@
 
 A fast, multilingual text processing utility that filters stopwords from input text. Supports 33 languages with efficient O(1) lookup using Bash associative arrays.
 
+## Python Version Available
+
+For performance-critical applications or processing large documents (> 2,000 words), consider the **[Python implementation](https://github.com/Open-Technology-Foundation/stopwords)** which offers superior performance on larger datasets. The Bash version is optimal for:
+- Quick command-line filtering
+- Shell script integration
+- Processing smaller texts (< 2,000 words)
+- Low startup overhead requirements
+
+Both implementations use the same NLTK stopwords data and provide compatible interfaces.
+
 ## Features
 
 - **Multilingual Support**: Filter stopwords in 33 different languages
@@ -402,10 +412,10 @@ Short options can be combined: `-lw`, `-pc`, etc.
 
 - O(1) stopword lookup using Bash associative arrays
 - Efficient for processing moderate-sized texts (< 1MB)
-- **Recommendation**: For documents > 1,500 words, Python is the better choice for performance-critical applications
-- Bash excels at small inputs (< 1500 words) due to lower startup overhead
+- **Recommendation**: For documents > 2,000 words, Python is the better choice for performance-critical applications
+- Bash excels at small inputs (< 2,000 words) due to lower startup overhead
 
-For small texts Bash is typically faster due to Python's startup overhead. The crossover point starts at around 1,500 words, where Python's superior string processing begins to dominate.
+For small texts Bash is typically faster due to Python's startup overhead. The crossover point starts at around 2,000 words, where Python's superior string processing begins to dominate.
 
 ## Troubleshooting
 

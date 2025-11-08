@@ -24,8 +24,13 @@ export NLTK_DATA
 # Default target
 .DEFAULT_GOAL := help
 
+# Test scripts
+FUNCTIONAL_TESTS = ./tests/functional_tests.sh
+BENCHMARK_TESTS = ./tests/benchmark.sh
+BENCHMARK_README = ./tests/benchmark_readme.sh
+
 # PHONY targets (not actual files)
-.PHONY: all install uninstall check test verify help clean
+.PHONY: all install uninstall check test verify help clean functional-tests benchmark benchmark-readme
 
 # Help target (default)
 help:
@@ -34,12 +39,15 @@ help:
 	@echo "Usage: make [TARGET] [VARIABLES]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  install     Install $(PROJECT) (requires sudo for system install)"
-	@echo "  uninstall   Remove $(PROJECT) installation"
-	@echo "  check       Verify installation status"
-	@echo "  test        Alias for 'check'"
-	@echo "  verify      Alias for 'check'"
-	@echo "  help        Show this help message (default)"
+	@echo "  install          Install $(PROJECT) (requires sudo for system install)"
+	@echo "  uninstall        Remove $(PROJECT) installation"
+	@echo "  check            Verify installation status"
+	@echo "  test             Run comprehensive functional tests"
+	@echo "  functional-tests Run functional test suite"
+	@echo "  benchmark        Run performance benchmarks"
+	@echo "  benchmark-readme Run README benchmark"
+	@echo "  verify           Alias for 'check'"
+	@echo "  help             Show this help message (default)"
 	@echo ""
 	@echo "Variables:"
 	@echo "  PREFIX      Installation prefix (default: /usr/local)"
@@ -91,9 +99,24 @@ uninstall:
 check:
 	@$(INSTALL_SCRIPT) check
 
-test: check
-
 verify: check
+
+# Test targets
+test: functional-tests
+	@echo ""
+	@echo "All functional tests passed!"
+
+functional-tests:
+	@echo "Running functional tests..."
+	@$(FUNCTIONAL_TESTS)
+
+benchmark:
+	@echo "Running performance benchmarks..."
+	@$(BENCHMARK_TESTS)
+
+benchmark-readme:
+	@echo "Running README benchmark..."
+	@$(BENCHMARK_README)
 
 # Clean target (for compatibility - nothing to clean in this project)
 clean:

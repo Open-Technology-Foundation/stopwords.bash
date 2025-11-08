@@ -18,7 +18,7 @@ readonly NC='\033[0m' # No Color
 
 # Source the bash stopwords function
 # shellcheck source=/dev/null
-source "$LIB_DIR/stopwords.sh"
+source "$LIB_DIR/stopwords"
 
 # Error message to stderr
 error() {

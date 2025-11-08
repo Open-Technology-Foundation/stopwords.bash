@@ -7,7 +7,7 @@ from typing import Set, List, Dict
 def load_stopwords(language: str = 'english') -> Set[str]:
     """Load stopwords from data file."""
     script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_file = os.path.join(script_dir, 'data', f'{language}.txt')
+    data_file = os.path.join(script_dir, 'stopwords_data', language)
 
     if not os.path.exists(data_file):
         raise FileNotFoundError(f"Stopwords file not found: {data_file}")
