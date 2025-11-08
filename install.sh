@@ -15,14 +15,13 @@ readonly SCRIPT_DIR
 
 # Installation configuration
 declare -- PREFIX="${PREFIX:-/usr/local}"
-declare -- NLTK_DATA_TARGET="${NLTK_DATA:-/usr/share/nltk_data}"
 declare -- BIN_DIR="$PREFIX/bin"
 declare -- DOC_DIR="$PREFIX/share/doc/$PROJECT_NAME"
-declare -- DATA_DIR="$NLTK_DATA_TARGET/corpora/stopwords"
+declare -- DATA_DIR="/usr/share/stopwords"
 
 # Source files
 readonly SOURCE_SCRIPT="$SCRIPT_DIR/stopwords"
-readonly SOURCE_DATA="$SCRIPT_DIR/nltk_data/corpora/stopwords"
+readonly SOURCE_DATA="$SCRIPT_DIR/stopwords_data"
 readonly SOURCE_README="$SCRIPT_DIR/README.md"
 readonly SOURCE_LICENSE="$SCRIPT_DIR/LICENSE"
 
@@ -93,6 +92,30 @@ run_install() {
   fi
 }
 
+# Detect if NLTK stopwords already installed
+detect_nltk_stopwords() {
+  local -a nltk_paths=(
+    "${NLTK_DATA:-}/corpora/stopwords"
+    "$HOME/nltk_data/corpora/stopwords"
+    "/usr/share/nltk_data/corpora/stopwords"
+    "/usr/local/share/nltk_data/corpora/stopwords"
+  )
+
+  local -- path
+  for path in "${nltk_paths[@]}"; do
+    [[ -z "$path" ]] && continue
+    if [[ -d "$path" ]]; then
+      local -i count
+      count=$(find "$path" -type f ! -name README 2>/dev/null | wc -l)
+      if ((count >= 30)); then
+        echo "$path"
+        return 0
+      fi
+    fi
+  done
+  return 1
+}
+
 # Show usage
 usage() {
   cat <<EOT
@@ -108,7 +131,7 @@ Commands:
 Environment Variables:
   PREFIX      Installation prefix (default: /usr/local)
               For user install: PREFIX=\$HOME/.local
-  NLTK_DATA   NLTK data directory (default: /usr/share/nltk_data)
+  NLTK_DATA   If set, the script will check this location first for stopwords
 
 Examples:
   # System-wide installation (requires sudo)
@@ -117,14 +140,15 @@ Examples:
   # User-local installation (no sudo needed)
   PREFIX=\$HOME/.local ./install.sh install
 
-  # Custom data location
-  NLTK_DATA=\$HOME/nltk_data ./install.sh install
-
   # Check installation status
   ./install.sh check
 
   # Uninstall
   sudo ./install.sh uninstall
+
+Note:
+  - If Python NLTK with stopwords is installed, data installation will be skipped
+  - The script automatically detects and uses existing NLTK installations
 
 Current Configuration:
   PREFIX:     $PREFIX
@@ -168,11 +192,52 @@ verify_sources() {
 cmd_install() {
   info "Installing $PROJECT_NAME $VERSION"
   info "Installation prefix: $PREFIX"
-  info "NLTK data directory: $NLTK_DATA_TARGET"
+  info "Stopwords data directory: $DATA_DIR"
   msg ""
 
   # Verify sources
   verify_sources || return 1
+
+  # Check for existing NLTK installation
+  local -- existing_nltk
+  if existing_nltk=$(detect_nltk_stopwords); then
+    info "Found existing NLTK stopwords: $existing_nltk"
+    success "Skipping data installation - will use existing NLTK data"
+    msg ""
+
+    # Install only script and docs, skip data
+    info "Installing script only..."
+
+    # Create bin directory if needed
+    if [[ ! -d "$BIN_DIR" ]]; then
+      run_install "$(dirname "$BIN_DIR")" mkdir -p "$BIN_DIR"
+    fi
+
+    run_install "$BIN_DIR" install -m 755 "$SOURCE_SCRIPT" "$BIN_DIR/$PROJECT_NAME"
+    success "Script installed to $BIN_DIR/$PROJECT_NAME"
+
+    # Install documentation
+    if [[ -f "$SOURCE_README" ]]; then
+      if [[ ! -d "$DOC_DIR" ]]; then
+        run_install "$(dirname "$DOC_DIR")" mkdir -p "$DOC_DIR"
+      fi
+      run_install "$DOC_DIR" cp "$SOURCE_README" "$DOC_DIR/"
+      [[ -f "$SOURCE_LICENSE" ]] && run_install "$DOC_DIR" cp "$SOURCE_LICENSE" "$DOC_DIR/"
+      success "Documentation installed to $DOC_DIR"
+    fi
+
+    msg ""
+    success "Installation complete (using existing NLTK data at $existing_nltk)"
+    msg ""
+
+    # Quick verification
+    info "Verifying installation..."
+    cmd_check
+    return $?
+  fi
+
+  info "NLTK stopwords not found - installing bundled data"
+  msg ""
 
   # Create directories
   info "Creating installation directories..."

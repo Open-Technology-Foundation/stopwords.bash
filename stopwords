@@ -7,8 +7,34 @@ stopwords() {
   local -- SCRIPT_NAME=${FUNCNAME[0]}
   local -- DATADIR
 
-  [[ -v NLTK_DATA ]] || declare -- NLTK_DATA=/usr/share/nltk_data
-  DATADIR="$NLTK_DATA"/corpora/stopwords
+  # Find stopwords data using fallback chain
+  find_stopwords_data() {
+    local -a search_paths=(
+      "${NLTK_DATA:-}/corpora/stopwords"
+      "/usr/share/nltk_data/corpora/stopwords"
+      "/usr/share/stopwords"
+    )
+
+    local -- datadir
+    for datadir in "${search_paths[@]}"; do
+      [[ -z "$datadir" ]] && continue
+      if [[ -d "$datadir" ]]; then
+        echo "$datadir"
+        return 0
+      fi
+    done
+    return 1
+  }
+
+  DATADIR=$(find_stopwords_data) || {
+    error "Stopwords data not found"
+    error ""
+    error "Install options:"
+    error "  1. Install this package: sudo make install"
+    error "  2. Install Python NLTK: pip install nltk && python -m nltk.downloader stopwords"
+    error "  3. Set NLTK_DATA: export NLTK_DATA=/path/to/nltk_data"
+    return 1
+  }
 
   # variables
   local -- DEFAULT_LANGUAGE=english
@@ -59,8 +85,6 @@ stopwords() {
     esac
     shift
   done
-
-  [[ -d $DATADIR ]] || { error "Stopwords data directory ${DATADIR@Q} not found."; return 1; }
 
   # Validate language
   local -- stopwords_file="$DATADIR"/"$LANGUAGE"
