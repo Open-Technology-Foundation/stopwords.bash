@@ -44,7 +44,8 @@ make PREFIX=$HOME/.local install
 
 This installs:
 - Script to `$PREFIX/bin/stopwords` (system: `/usr/local/bin/`, user: `~/.local/bin/`)
-- Stopwords data to `/usr/share/nltk_data/corpora/stopwords/` (33 languages, ~170KB)
+- Stopwords data to `/usr/share/stopwords/` (33 languages, ~170KB)
+  - **Note:** If you have Python NLTK installed with stopwords, data installation is automatically skipped
 - Documentation to `$PREFIX/share/doc/stopwords/`
 
 ### Manual Installation
@@ -302,13 +303,18 @@ Word frequency as `count word` pairs, sorted by count (ascending):
 
 ### Structure
 
-Stopword lists are stored in the NLTK data directory:
-- Default location: `/usr/share/nltk_data/corpora/stopwords/`
-- Can be customized via the `NLTK_DATA` environment variable
+Stopword lists are located in one of these directories (checked in priority order):
+1. `$NLTK_DATA/corpora/stopwords/` (if NLTK_DATA environment variable is set)
+2. `/usr/share/nltk_data/corpora/stopwords/` (if Python NLTK is installed)
+3. `/usr/share/stopwords/` (bundled installation fallback)
+
+Each location contains:
 - One file per language (e.g., `english`, `spanish`)
 - One stopword per line
 - Alphabetically sorted
 - UTF-8 encoded
+
+The script automatically detects and uses existing NLTK installations, avoiding data duplication.
 
 ## Using as a Sourced Function
 
@@ -400,6 +406,32 @@ Short options can be combined: `-lw`, `-pc`, etc.
 - Bash excels at small inputs (< 1500 words) due to lower startup overhead
 
 For small texts Bash is typically faster due to Python's startup overhead. The crossover point starts at around 1,500 words, where Python's superior string processing begins to dominate.
+
+## Troubleshooting
+
+### Stopwords data not found
+
+If you get an error about missing stopwords data, try:
+
+1. **Install this package:**
+   ```bash
+   sudo make install
+   ```
+
+2. **OR use Python NLTK:**
+   ```bash
+   pip install nltk
+   python -m nltk.downloader stopwords
+   ```
+
+3. **OR set NLTK_DATA manually:**
+   ```bash
+   export NLTK_DATA=/path/to/your/nltk_data
+   ```
+
+### Using existing NLTK installation
+
+If you have Python NLTK installed with stopwords, the script will automatically detect and use it. No additional configuration needed! The installation process will skip installing duplicate data.
 
 ## License
 
