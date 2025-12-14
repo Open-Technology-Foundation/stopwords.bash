@@ -1,5 +1,8 @@
 #!/bin/bash
-# script/module stopwords
+# stopwords - Multilingual stopwords filter for text processing
+# Filters stopwords from input text in 33 languages using Bash associative arrays
+# Optimal for processing text < 2,000 words; for larger documents see:
+# https://github.com/Open-Technology-Foundation/stopwords (Python implementation)
 
 stopwords() {
   # Script metadata
@@ -207,6 +210,11 @@ usage() {
 $SCRIPT_NAME $VERSION - Remove stopwords from text
 
 Filters stopwords from input text based on the selected language.
+
+Performance Note:
+  This Bash implementation is optimal for processing text < 2,000 words.
+  For larger documents or performance-critical applications, consider the
+  Python implementation: https://github.com/Open-Technology-Foundation/stopwords
 
 Usage: $SCRIPT_NAME [OPTIONS] [TEXT]
 
