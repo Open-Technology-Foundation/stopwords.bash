@@ -42,14 +42,14 @@ This one-liner will download and execute the installation script, installing sto
 ```bash
 git clone https://github.com/Open-Technology-Foundation/stopwords.bash
 cd stopwords.bash
-sudo make install
+sudo ./install.sh install
 ```
 
 **User-local installation** (no sudo required):
 ```bash
 git clone https://github.com/Open-Technology-Foundation/stopwords.bash
 cd stopwords.bash
-make PREFIX=$HOME/.local install
+PREFIX=$HOME/.local ./install.sh install
 ```
 
 This installs:
@@ -78,8 +78,6 @@ NLTK_DATA=$HOME/nltk_data ./install.sh install
 Check that everything is installed correctly:
 
 ```bash
-make check
-# or
 ./install.sh check
 ```
 
@@ -92,13 +90,10 @@ This verifies:
 
 ```bash
 # System installation
-sudo make uninstall
+sudo ./install.sh uninstall
 
 # User installation
-make PREFIX=$HOME/.local uninstall
-
-# Or using install.sh
-./install.sh uninstall
+PREFIX=$HOME/.local ./install.sh uninstall
 ```
 
 ### Environment Configuration
@@ -122,12 +117,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 **Custom prefix**:
 ```bash
-make PREFIX=/opt/local install
-```
-
-**Package staging** (for package maintainers):
-```bash
-make DESTDIR=/tmp/package PREFIX=/usr install
+PREFIX=/opt/local ./install.sh install
 ```
 
 **Installation script help**:
@@ -425,7 +415,7 @@ If you get an error about missing stopwords data, try:
 
 1. **Install this package:**
    ```bash
-   sudo make install
+   sudo ./install.sh install
    ```
 
 2. **OR use Python NLTK:**

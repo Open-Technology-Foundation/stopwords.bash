@@ -291,15 +291,15 @@ cmd_install() {
   fi
 
   # Check NLTK_DATA environment
-  if [[ "$NLTK_DATA_TARGET" != "/usr/share/nltk_data" ]] || [[ -v NLTK_DATA ]]; then
+  if [[ "$DATA_DIR" != "/usr/share/stopwords" ]] || [[ -v NLTK_DATA ]]; then
     info "NLTK_DATA configuration:"
     if [[ -v NLTK_DATA ]]; then
       msg "  Current: \$NLTK_DATA=$NLTK_DATA"
     fi
-    msg "  Installed to: $NLTK_DATA_TARGET"
-    if [[ ! -v NLTK_DATA ]] && [[ "$NLTK_DATA_TARGET" != "/usr/share/nltk_data" ]]; then
+    msg "  Installed to: $DATA_DIR"
+    if [[ ! -v NLTK_DATA ]] && [[ "$DATA_DIR" != "/usr/share/stopwords" ]]; then
       warning "You may need to set NLTK_DATA environment variable:"
-      msg "    export NLTK_DATA=$NLTK_DATA_TARGET"
+      msg "    export NLTK_DATA=$DATA_DIR"
     fi
     msg ""
   fi
@@ -415,17 +415,17 @@ cmd_check() {
 
   # Check NLTK_DATA environment
   if [[ -v NLTK_DATA ]]; then
-    if [[ "$NLTK_DATA" == "$NLTK_DATA_TARGET" ]]; then
+    if [[ "$NLTK_DATA" == "$DATA_DIR" ]]; then
       success "NLTK_DATA correctly set: $NLTK_DATA"
     else
-      warning "NLTK_DATA mismatch: \$NLTK_DATA=$NLTK_DATA but data at $NLTK_DATA_TARGET"
+      warning "NLTK_DATA mismatch: \$NLTK_DATA=$NLTK_DATA but data at $DATA_DIR"
     fi
   else
-    if [[ "$NLTK_DATA_TARGET" == "/usr/share/nltk_data" ]]; then
-      info "NLTK_DATA not set (using default: /usr/share/nltk_data)"
+    if [[ "$DATA_DIR" == "/usr/share/stopwords" ]]; then
+      info "NLTK_DATA not set (using default: /usr/share/stopwords)"
     else
-      warning "NLTK_DATA not set (data installed to: $NLTK_DATA_TARGET)"
-      msg "    Consider: export NLTK_DATA=$NLTK_DATA_TARGET"
+      warning "NLTK_DATA not set (data installed to: $DATA_DIR)"
+      msg "    Consider: export NLTK_DATA=$DATA_DIR"
     fi
   fi
 
